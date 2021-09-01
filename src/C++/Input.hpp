@@ -11,5 +11,7 @@ class Input {
     public:
         template <typename T>
         static std::vector<T> list();
-        static std::vector<Device> list();
 };
+
+template <>
+std::vector<Device> Input::list();
