@@ -1,23 +1,27 @@
-#include <SGUID.hpp>
-#include <Device.hpp>
+#include <Input.hpp>
 
 #include <iostream>
 
 int main() {
-    SGUID guid(DeviceBus::USB, 0x0079, 0x0006, 0x0107);
-    SGUID mguid("0100790006000701");
-    SGUIDInfo guidInfo(guid);
-    SGUIDInfo mguidInfo(mguid);
-    Device device("\\\\?\\hid#vid_0079&pid_0006#7&2fb07e08&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}");
+    std::vector<Device> devices;
 
-    device.open();
+    devices = Input::list<Device>();
 
-    std::cout << guidInfo;
-    std::cout << "SGUID: " << guid.toString() << std::endl << std::endl;
-    std::cout << mguidInfo;
-    std::cout << "SGUID: " << mguid.toString() << std::endl;
+    for(int i = 0; i < devices.size(); i++) {
+        
+        /*
+            TODO: Por algum motivo abrir o dispostivo de mouse somente leitura apresenta falhar no GCC, mas não no visual studio
+        */
+        std::cout << "---------------------------------------------" << std::endl << std::endl;
+        if(devices[i].open()) {
+            std::cout << devices[i];
+            std::cout << std::endl;
+            devices[i].close();
+        }
+    }
 
-    device.close();
+    if(devices.size())
+        std::cout << "---------------------------------------------" << std::endl;
 
     return 0;
 }

@@ -10,13 +10,6 @@
 #include <iomanip>
 #include <stdint.h>
 
-/* Mapeamento será dividido entre USB e bluetooh */
-enum DeviceBus : uint16_t{
-    USB = 0x0001,
-    /* Mapeamento bluetooth ainda não suportado */
-    Bluetooth = 0x0002
-};
-
 class SGUID {
     private:
         uint16_t data[4];

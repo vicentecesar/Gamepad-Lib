@@ -3,7 +3,6 @@
 #include <ddk/hidpi.h>
 #include <ddk/hidsdi.h>
 #include <iostream>
-#include <stdio.h>
 
 static std::string wstringTostring(const std::wstring& wstr) {
     char *buffer;
@@ -43,20 +42,20 @@ bool Device::open() {
 
     /* Para leitura sincrona */
 	this->handle = CreateFileA(this->path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, NULL);
-
+	
     if (this->handle == INVALID_HANDLE_VALUE) {
-		std::cout << "Erro ao abrir dispositivo ..." << std::endl;
+		std::cout << "Erro ao abrir dispositivo ..." << std::endl << std::endl;
 		return false;
 	}
 
     /* Recupera usage e usage page */
 	if (!HidD_GetPreparsedData(this->handle, &preparsedData)) {
-		std::cout << "Erro ao carregar parser para dispositivo USB..." << std::endl;
+		std::cout << "Erro ao carregar parser para dispositivo USB..." << std::endl << std::endl;
 		return false;
 	}
 
 	if (HidP_GetCaps(preparsedData, &capabilities) == HIDP_STATUS_INVALID_PREPARSED_DATA) {
-		std::cout << "Erro ao recuperar CAPS do dispositivo ..." << std::endl;
+		std::cout << "Erro ao recuperar CAPS do dispositivo ..." << std::endl << std::endl;
 		return false;
 	}
 
@@ -66,15 +65,17 @@ bool Device::open() {
     buffer = (wchar_t *) calloc(size, sizeof(char));
 
     if(HidD_GetProductString(this->handle, (PVOID)buffer, size) == FALSE) {
-        std::cout << GetLastError() << std::endl;
-        std::cout << "Erro ao recuperar a string produto do dispositivo ..." << std::endl;
+        std::cout << "Windows error code: " << GetLastError() << std::endl;
+        std::cout << "Erro ao recuperar a string produto do dispositivo ..." << std::endl << std::endl;
+		return false;
     }
     
     this->product = wstringTostring(buffer);
     
     if(HidD_GetManufacturerString(this->handle, (PVOID)buffer, size) == FALSE) {
-        std::cout << GetLastError() << std::endl;
-        std::cout << "Erro ao recuperar a string fabricante do dispositivo ..." << std::endl;
+        std::cout << "Windows error code: " << GetLastError() << std::endl;
+        std::cout << "Erro ao recuperar a string fabricante do dispositivo ..." << std::endl << std::endl;
+		return false;
     }
 
     this->manufacturer = wstringTostring(buffer);

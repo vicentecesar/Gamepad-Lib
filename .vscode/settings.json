@@ -46,6 +46,7 @@
         "locale": "cpp",
         "xlocbuf": "cpp",
         "xlocmes": "cpp",
-        "clocale": "cpp"
+        "clocale": "cpp",
+        "vector": "cpp"
     }
 }

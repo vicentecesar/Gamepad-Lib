@@ -18,11 +18,21 @@
 	https://www.usb.org/hid (Pagina inicial da documentação completa sobre HID)
 */
 
+#include "SGUID.hpp"
+
 #include <windows.h>
 #include <string>
+#include <iostream>
 
 class Device {
     public:
+		/* Mapeamento será dividido entre USB e bluetooh */
+		enum Bus : uint16_t{
+			USB = 0x0001,
+			/* Mapeamento bluetooth ainda não suportado */
+			Bluetooth = 0x0002
+		};
+
         enum class Type : uint32_t {
 			All = 0x00,
 			Joystick = 0x01,
@@ -32,14 +42,14 @@ class Device {
 		};
 
 		/* Outras paginas de uso não são listadas aqui pois não são usadas pelas engine */
-		enum class UsagePage : int32_t {
-			Ignore = -1,
+		enum class UsagePage : uint16_t {
+			Ignore = 0xFFFF,
 			GenericDesktopControls = 1
 		};
 
 		/* Apenas Usage para GenericDesktopControls são listados aqui, ja que são os unicos usados */
-		enum class Usage {
-			Ignore = -1,
+		enum class Usage : uint16_t {
+			Ignore = 0xFFFF,
 			Mouse = 2,
 			Joystick = 4,
 			GamePad = 5,
@@ -62,18 +72,31 @@ class Device {
 		std::string path;
 		std::string product;
 		std::string  manufacturer;
-		unsigned int vid;
-		unsigned int pid;
-		unsigned int rev;
+		uint16_t vid;
+		uint16_t pid;
+		uint16_t rev;
+		uint16_t bus;
 		Device::UsagePage usagePage;
 		Device::Usage usage;
 
     public:
-        Device(const char *path) : path(path) {}
+        Device(uint16_t bus, const char *path) : bus(bus), path(path) {}
         /* Abre o dispositivo, preenchendo os campos necessarios */
         bool open();
         /* Fecha o dispositivo ao terminar seu uso */
         void close();
         /* Verifica se o dispositivo tem uma determinada categoria */
         bool verify(Device::UsagePage usagePage, Device::Usage usage);
+
+        friend std::ostream & operator << (std::ostream &os, Device &device); 
 };
+
+/* Operador usado apenas para facilitar a depuração */
+inline std::ostream & operator << (std::ostream &os, Device &device) {
+	os << "Path:         " << device.path << std::endl;
+	os << "Product:      " << device.product << std::endl;
+	os << "Panufacturer: " << device.manufacturer << std::endl;
+	os << "Usage Page:   " << (uint16_t) device.usagePage << std::endl;
+	os << "Usage:        " << (uint16_t) device.usage << std::endl;
+	os << "SGIU:         " << SGUID(device.bus, device.vid, device.pid, device.rev).toString() << std::endl;
+}
