@@ -1,32 +1,13 @@
-# Prerequisites
-*.d
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+.vs/
+/bin/
+bin-int/
+*.user
+*.sln
+*.vcxproj
+*.filters
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# Performance files
+Sandbox/startup.json
+Sandbox/main-loop.json
+Sandbox/shutdown.json

@@ -22,15 +22,33 @@
 
 #include <windows.h>
 #include <string>
+#include <vector>
+#include <unordered_map>
 #include <iostream>
+
+class Capabilities {
+	public:
+		int numberOfButtonsCaps;
+		int numberOfValueCaps;
+};
+
+class Mapping {
+	private:
+		std::vector<std::string> buttonName;
+		std::vector<bool> buttonState;
+		std::vector<std::string> analogicName;
+		std::vector<float> analogicState;
+		std::unordered_map<std::string, bool> buttonStateMap;
+		std::unordered_map<std::string, float> abalogicStateMap;
+};
 
 class Device {
     public:
 		/* Mapeamento será dividido entre USB e bluetooh */
 		enum Bus : uint16_t{
-			USB = 0x0001,
+			USB = 0x0003,
 			/* Mapeamento bluetooth ainda não suportado */
-			Bluetooth = 0x0002
+			Bluetooth = 0x0005
 		};
 
         enum class Type : uint32_t {
@@ -67,6 +85,8 @@ class Device {
     public:
         /* Variaveis dependentes de sistema */
 		HANDLE handle;
+		/* Dados do dispositivo para analize */
+		void *preparsedData;
 
 		/* Variaveis independente de sistema */
 		std::string path;
@@ -79,14 +99,23 @@ class Device {
 		Device::UsagePage usagePage;
 		Device::Usage usage;
 
+		void *dataBuffer;
+		int dataBufferSize;
+
+		Capabilities capabilities;
+		Mapping mapping;
+
     public:
-        Device(uint16_t bus, const char *path) : bus(bus), path(path) {}
+        Device(uint16_t bus, const char *path) : bus(bus), path(path), capabilities({}), preparsedData(NULL) {
+		}
         /* Abre o dispositivo, preenchendo os campos necessarios */
         bool open();
         /* Fecha o dispositivo ao terminar seu uso */
         void close();
         /* Verifica se o dispositivo tem uma determinada categoria */
         bool verify(Device::UsagePage usagePage, Device::Usage usage);
+		/* Atualiza informações do dispositivo */
+		void update();
 
         friend std::ostream & operator << (std::ostream &os, Device &device); 
 };
@@ -94,9 +123,12 @@ class Device {
 /* Operador usado apenas para facilitar a depuração */
 inline std::ostream & operator << (std::ostream &os, Device &device) {
 	os << "Path:         " << device.path << std::endl;
+	os << "Bus:         " << device.bus << std::endl;
 	os << "Product:      " << device.product << std::endl;
-	os << "Panufacturer: " << device.manufacturer << std::endl;
+	os << "Manufacturer: " << device.manufacturer << std::endl;
 	os << "Usage Page:   " << (uint16_t) device.usagePage << std::endl;
 	os << "Usage:        " << (uint16_t) device.usage << std::endl;
-	os << "SGIU:         " << SGUID(device.bus, device.vid, device.pid, device.rev).toString() << std::endl;
+	os << "SGUID:         " << SGUID(device.bus, device.vid, device.pid, device.rev) << std::endl;
+
+	return os;
 }

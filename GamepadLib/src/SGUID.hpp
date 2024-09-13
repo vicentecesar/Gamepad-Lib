@@ -21,19 +21,22 @@ class SGUID {
         SGUID(const std::string &guid);
         ~SGUID() {}
 
-        std::string toString();
-
-        uint16_t operator [] (unsigned int index) {
+        uint16_t operator [] (unsigned int index) const {
             return data[index];
         }
 };
 
-/* Operador usado apenas para facilitar a depuração */
-inline std::ostream & operator << (std::ostream &os, SGUID &guid) {
-    os << guid.toString();
+#define SWAP_BYTES(value) (((value & 0xFF00) >> 8) | ((value & 0x00FF) << 8))
 
+inline std::ostream & operator << (std::ostream &os, const SGUID &guid) {
+    os << std::setfill('0') << std::setw(4) << std::right << std::hex << SWAP_BYTES(guid[0]) << "0000";
+    os << std::setfill('0') << std::setw(4) << std::right << std::hex << SWAP_BYTES(guid[1]) << "0000";
+    os << std::setfill('0') << std::setw(4) << std::right << std::hex << SWAP_BYTES(guid[2]) << "0000";
+    os << std::setfill('0') << std::setw(4) << std::right << std::hex << SWAP_BYTES(guid[3]) << "0000";
     return os;
 }
+
+#undef SWAP_BYTES
 
 class SGUIDInfo {
     private:
@@ -52,10 +55,10 @@ class SGUIDInfo {
 
 /* Operador usado apenas para facilitar a depuração */
 inline std::ostream & operator << (std::ostream &os, SGUIDInfo &guidInfo) {
-    os << "Bus:     0x" << std::setfill('0') << std::setw(4) << std::right << std::hex << guidInfo.bus     << "\n";
-    os << "Vendor:  0x" << std::setfill('0') << std::setw(4) << std::right << std::hex << guidInfo.vendor  << "\n";
-    os << "product: 0x" << std::setfill('0') << std::setw(4) << std::right << std::hex << guidInfo.product << "\n";
-    os << "version: 0x" << std::setfill('0') << std::setw(4) << std::right << std::hex << guidInfo.version << "\n";
+    os << "Bus:     0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << guidInfo.bus     << "\n";
+    os << "Vendor:  0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << guidInfo.vendor  << "\n";
+    os << "product: 0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << guidInfo.product << "\n";
+    os << "version: 0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << guidInfo.version << "\n";
 
     return os;
 }

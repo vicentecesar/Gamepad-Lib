@@ -1,6 +1,6 @@
 #include "Input.hpp"
 
-#include <ddk/hidsdi.h>
+#include <hidsdi.h>
 #include <setupapi.h>
 #include <iostream>
 #include <stdio.h>
@@ -48,7 +48,7 @@ std::vector<Device> Input::list<Device>() {
         }
 
         /* Aloca memoria para a interface do dispositivo */
-        diviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)HeapAlloc(processHeap, 0, required);
+        diviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_A)HeapAlloc(processHeap, 0, required);
         if (diviceInterfaceDetailData == nullptr) {
             std::cout << "Erro ao alocar buffer para interface detalhada de comunicação com dispositivos ...";
             /* Vai para o proximo dispositivo da lista em casa do erro */

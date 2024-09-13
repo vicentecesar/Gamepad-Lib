@@ -35,18 +35,6 @@ SGUID::SGUID(const std::string &guid) {
     }
 }
 
-std::string SGUID::toString() {
-    std::stringstream ss;
-    uint8_t *ptr = (uint8_t *)this->data;
-
-    ss << std::hex;
-
-     for( int i = 0 ; i < 8; i++) {
-         ss << std::setw(2) << std::setfill('0') << (int)ptr[i];
-     }
-
-     return ss.str();
-}
 
 SGUIDInfo::SGUIDInfo(SGUID guid) {
     /* 
